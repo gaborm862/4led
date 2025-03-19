@@ -1,0 +1,32 @@
+import RPi.GPIO as GPIO
+from time import sleep
+
+# GPIO beállítások
+GPIO.setmode(GPIO.BCM)  # BCM számozási mód
+GPIO.setwarnings(False)
+
+# LED kimenetek
+led_pins = [5, 18, 13, 21]
+for pin in led_pins:
+    GPIO.setup(pin, GPIO.OUT)
+
+# Gomb bemenet
+button_pin = 26
+GPIO.setup(button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)  # Belső felhúzó ellenállás
+
+running = False
+
+try:
+    while True:
+        if GPIO.input(button_pin) == GPIO.LOW:  # Ha a gombot lenyomták
+            running = True
+        
+        if running:
+            for pin in led_pins:
+                GPIO.output(pin, not GPIO.input(pin))  # LED állapot váltás
+                sleep(0.5)
+except KeyboardInterrupt:
+    pass
+finally:
+    # Tisztítás a program végén
+    GPIO.cleanup()
